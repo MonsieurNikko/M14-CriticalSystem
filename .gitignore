@@ -1,0 +1,12 @@
+﻿target/
+project/target/
+project/project/
+.bloop/
+.bsp/
+.metals/
+.vscode/
+.idea/
+*.log
+*-out.txt
+.DS_Store
+Thumbs.db
