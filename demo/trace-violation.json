@@ -1,0 +1,24 @@
+{
+  "id": "violation",
+  "titre": "Tentative PSD invalide (CRITIQUE - bloquee)",
+  "description": "Tentative d'ouverture des portes alors qu'aucun train n'est a quai. Petri refuse (transition non tirable) ; cote Akka, le message est hors protocole car seul un Train en etat a_quai emet OuverturePortes.",
+  "etapes": [
+    {
+      "label": "Etat initial M0",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Tentative hors protocole : OuverturePortes(Train1) alors qu'aucun train n'est a quai",
+      "akka": {"de": "HorsProtocole", "vers": "GestionnairePortes", "libelle": "OuverturePortes(Train1)"},
+      "transition": "Ouverture_portes_T1",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": true
+    },
+    {
+      "label": "Petri refuse : T1_a_quai=0 -> Ouverture_portes_T1 non tirable. TrainSpec garantit que le vrai Train n'emet pas ce message.",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": true
+    }
+  ]
+}
