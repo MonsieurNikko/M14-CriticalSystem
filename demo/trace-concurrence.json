@@ -1,0 +1,81 @@
+{
+  "id": "concurrence",
+  "titre": "Concurrence canton + quai (2 trains)",
+  "description": "Train1 et Train2 demandent quasi-simultanement. T2 doit attendre canton, puis quai.",
+  "etapes": [
+    {
+      "label": "Etat initial M0",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 demande le canton",
+      "akka": {"de": "Train1", "vers": "SectionController", "libelle": "Demande"},
+      "transition": "T1_demande",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 1, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 entre dans le canton",
+      "akka": {"de": "SectionController", "vers": "Train1", "libelle": "Autorisation"},
+      "transition": "T1_entree_canton",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 1, "T1_a_quai": 0, "T2_hors": 1, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train2 demande le canton (sera mis en attente)",
+      "akka": {"de": "Train2", "vers": "SectionController", "libelle": "Demande"},
+      "transition": "T2_demande",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 1, "T1_a_quai": 0, "T2_hors": 0, "T2_attente": 1, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Canton occupe : Train2 recoit Attente",
+      "akka": {"de": "SectionController", "vers": "Train2", "libelle": "Attente"},
+      "marquage": {"Canton_libre": 0, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 1, "T1_a_quai": 0, "T2_hors": 0, "T2_attente": 1, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 arrive au quai (libere le canton)",
+      "akka": {"de": "Train1", "vers": "QuaiController", "libelle": "ArriveeQuai"},
+      "transition": "T1_arrivee_quai",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 0, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 1, "T2_hors": 0, "T2_attente": 1, "T2_sur_canton": 0, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Canton libre : Train2 peut enfin entrer",
+      "akka": {"de": "SectionController", "vers": "Train2", "libelle": "Autorisation"},
+      "transition": "T2_entree_canton",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 0, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 1, "T2_hors": 0, "T2_attente": 0, "T2_sur_canton": 1, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 ouvre les portes (a quai)",
+      "akka": {"de": "Train1", "vers": "GestionnairePortes", "libelle": "OuverturePortes"},
+      "transition": "Ouverture_portes_T1",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 0, "Portes_fermees": 0, "Portes_ouvertes": 1, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 1, "T2_hors": 0, "T2_attente": 0, "T2_sur_canton": 1, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 ferme les portes",
+      "akka": {"de": "Train1", "vers": "GestionnairePortes", "libelle": "FermeturePortes"},
+      "transition": "Fermeture_portes_T1",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 0, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 0, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 1, "T2_hors": 0, "T2_attente": 0, "T2_sur_canton": 1, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train1 quitte le quai (libere le quai)",
+      "akka": {"de": "Train1", "vers": "QuaiController", "libelle": "DepartQuai"},
+      "transition": "T1_depart_quai",
+      "marquage": {"Canton_libre": 0, "Quai_libre": 1, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 0, "T2_attente": 0, "T2_sur_canton": 1, "T2_a_quai": 0},
+      "violation": false
+    },
+    {
+      "label": "Train2 arrive au quai a son tour",
+      "akka": {"de": "Train2", "vers": "QuaiController", "libelle": "ArriveeQuai"},
+      "transition": "T2_arrivee_quai",
+      "marquage": {"Canton_libre": 1, "Quai_libre": 0, "Portes_fermees": 1, "Portes_ouvertes": 0, "T1_hors": 1, "T1_attente": 0, "T1_sur_canton": 0, "T1_a_quai": 0, "T2_hors": 0, "T2_attente": 0, "T2_sur_canton": 0, "T2_a_quai": 1},
+      "violation": false
+    }
+  ]
+}
